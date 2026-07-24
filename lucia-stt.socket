@@ -1,0 +1,10 @@
+[Unit]
+Description=Luc.ia STT socket
+
+[Socket]
+ListenStream=%t/lucia-stt.sock
+SocketMode=0600
+RemoveOnStop=true
+
+[Install]
+WantedBy=sockets.target

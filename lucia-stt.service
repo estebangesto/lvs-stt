@@ -1,0 +1,21 @@
+[Unit]
+Description=Luc.ia STT worker (faster-whisper)
+Requires=lucia-stt.socket
+After=lucia-stt.socket
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/lucia-stt
+ExecStart=/opt/lucia-stt/venv/bin/python3 /opt/lucia-stt/transcribe_whisper_fast.py --serve --socket %t/lucia-stt.sock
+Restart=always
+RestartSec=2
+Environment=STT_BACKEND=faster-whisper
+Environment=STT_MODEL=small
+Environment=STT_DEVICE=cuda
+Environment=STT_COMPUTE_TYPE=float16
+Environment=STT_LANGUAGE=es
+Environment=STT_VAD=1
+Environment=STT_BEAM_SIZE=1
+
+[Install]
+WantedBy=default.target
