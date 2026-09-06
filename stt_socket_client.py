@@ -4,7 +4,7 @@
 Usage:
   python3 stt_socket_client.py /path/to/audio.ogg
   python3 stt_socket_client.py /path/to/audio.ogg --json
-  python3 stt_socket_client.py /path/to/audio.ogg --socket /run/user/1000/lvs-stt.sock
+  python3 stt_socket_client.py /path/to/audio.ogg --socket "$XDG_RUNTIME_DIR/lvs-stt.sock"
 
 It sends a single JSON request to the Unix socket and prints the response.
 """
@@ -21,11 +21,12 @@ from typing import Optional
 
 
 def default_socket_candidates() -> list[str]:
-    uid = os.getuid()
-    return [
-        f"/run/user/{uid}/lvs-stt.sock",
-        "/tmp/lvs-stt.sock",
-    ]
+    candidates = []
+    runtime_dir = os.getenv("XDG_RUNTIME_DIR")
+    if runtime_dir:
+        candidates.append(os.path.join(runtime_dir, "lvs-stt.sock"))
+    candidates.append("/tmp/lvs-stt.sock")
+    return candidates
 
 
 def resolve_socket_path(explicit: Optional[str]) -> str:

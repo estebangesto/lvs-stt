@@ -43,7 +43,6 @@ from pathlib import Path
 from typing import Any
 
 # ---------- Config ----------
-DEFAULT_PROMPT = "Soy LVS, la asistente personal de Esteban. Hablamos de tecnología, ciberseguridad y Boca Juniors."
 DEFAULT_LANGUAGE = os.getenv("STT_LANGUAGE", "es")
 DEFAULT_MODEL = os.getenv("STT_MODEL", "small")
 DEFAULT_BACKEND = os.getenv("STT_BACKEND", "faster-whisper")
@@ -51,7 +50,8 @@ DEFAULT_DEVICE = os.getenv("STT_DEVICE", "auto")
 DEFAULT_COMPUTE_TYPE = os.getenv("STT_COMPUTE_TYPE", "")
 DEFAULT_BEAM_SIZE = int(os.getenv("STT_BEAM_SIZE", "1"))
 DEFAULT_VAD = os.getenv("STT_VAD", "1") not in {"0", "false", "False", "no", "NO"}
-DEFAULT_PROMPT_ENV = os.getenv("STT_PROMPT", DEFAULT_PROMPT)
+DEFAULT_PROMPT_ENV = os.getenv("STT_PROMPT", "")
+DEFAULT_SOCKET = os.getenv("STT_SOCKET_PATH", "/tmp/lvs-stt.sock")
 DEFAULT_SOCKET_TIMEOUT = float(os.getenv("STT_SOCKET_TIMEOUT", "30"))
 
 
@@ -236,7 +236,7 @@ def parse_args() -> argparse.Namespace:
     mode = p.add_mutually_exclusive_group(required=False)
     mode.add_argument("--once", action="store_true", help="Transcribe one file and exit")
     mode.add_argument("--serve", action="store_true", help="Run as a Unix socket daemon")
-    p.add_argument("--socket", default="/tmp/lvs-stt.sock", help="Unix socket path for --serve")
+    p.add_argument("--socket", default=DEFAULT_SOCKET, help="Unix socket path for --serve")
     p.add_argument("--backend", default=DEFAULT_BACKEND, choices=["faster-whisper", "whisper"], help="STT backend")
     p.add_argument("--model", default=DEFAULT_MODEL, help="Model size/name")
     p.add_argument("--device", default=DEFAULT_DEVICE, help="Device: auto|cpu|cuda")

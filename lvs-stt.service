@@ -5,17 +5,11 @@ After=lvs-stt.socket
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/lvs-stt
-ExecStart=/opt/lvs-stt/venv/bin/python3 /opt/lvs-stt/transcribe_whisper_fast.py --serve --socket %t/lvs-stt.sock
+WorkingDirectory=%h/.local/share/lvs-stt
+ExecStart=%h/.local/share/lvs-stt/venv/bin/python3 %h/.local/share/lvs-stt/transcribe_whisper_fast.py --serve --socket %t/lvs-stt.sock
 Restart=always
 RestartSec=2
-Environment=STT_BACKEND=faster-whisper
-Environment=STT_MODEL=small
-Environment=STT_DEVICE=cuda
-Environment=STT_COMPUTE_TYPE=float16
-Environment=STT_LANGUAGE=es
-Environment=STT_VAD=1
-Environment=STT_BEAM_SIZE=1
+EnvironmentFile=-%h/.config/lvs/lvs-stt.env
 
 [Install]
 WantedBy=default.target

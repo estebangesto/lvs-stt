@@ -1,6 +1,6 @@
 PYTHON ?= python3
 SERVICE_DIR ?= $(HOME)/.config/systemd/user
-SRC_DIR := /opt/lvs-stt
+SRC_DIR ?= $(CURDIR)
 
 .PHONY: help lint install enable start stop status benchmark
 
