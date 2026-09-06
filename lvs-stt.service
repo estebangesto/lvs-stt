@@ -1,12 +1,12 @@
 [Unit]
-Description=Luc.ia STT worker (faster-whisper)
-Requires=lucia-stt.socket
-After=lucia-stt.socket
+Description=LVS STT worker (faster-whisper)
+Requires=lvs-stt.socket
+After=lvs-stt.socket
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/lucia-stt
-ExecStart=/opt/lucia-stt/venv/bin/python3 /opt/lucia-stt/transcribe_whisper_fast.py --serve --socket %t/lucia-stt.sock
+WorkingDirectory=/opt/lvs-stt
+ExecStart=/opt/lvs-stt/venv/bin/python3 /opt/lvs-stt/transcribe_whisper_fast.py --serve --socket %t/lvs-stt.sock
 Restart=always
 RestartSec=2
 Environment=STT_BACKEND=faster-whisper

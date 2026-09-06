@@ -22,7 +22,7 @@ from statistics import mean
 ROOT = Path(__file__).resolve().parent
 CURRENT = ROOT / "transcribe_whisper.py"
 FAST = ROOT / "transcribe_whisper_fast.py"
-DEFAULT_SOCKET = Path("/tmp/lucia-stt.sock")
+DEFAULT_SOCKET = Path("/tmp/lvs-stt.sock")
 
 
 def run_current(audio: str) -> tuple[float, str]:

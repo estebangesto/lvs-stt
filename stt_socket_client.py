@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Small test client for Luc.ia STT socket activation.
+"""Small test client for LVS STT socket activation.
 
 Usage:
   python3 stt_socket_client.py /path/to/audio.ogg
   python3 stt_socket_client.py /path/to/audio.ogg --json
-  python3 stt_socket_client.py /path/to/audio.ogg --socket /run/user/1000/lucia-stt.sock
+  python3 stt_socket_client.py /path/to/audio.ogg --socket /run/user/1000/lvs-stt.sock
 
 It sends a single JSON request to the Unix socket and prints the response.
 """
@@ -23,8 +23,8 @@ from typing import Optional
 def default_socket_candidates() -> list[str]:
     uid = os.getuid()
     return [
-        f"/run/user/{uid}/lucia-stt.sock",
-        "/tmp/lucia-stt.sock",
+        f"/run/user/{uid}/lvs-stt.sock",
+        "/tmp/lvs-stt.sock",
     ]
 
 
@@ -67,7 +67,7 @@ def send_request(sock_path: str, audio_path: str, timeout: float, language: str,
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Test client for Luc.ia STT socket")
+    p = argparse.ArgumentParser(description="Test client for LVS STT socket")
     p.add_argument("audio", help="Audio file path")
     p.add_argument("--socket", help="Unix socket path")
     p.add_argument("--timeout", type=float, default=60.0)

@@ -1,8 +1,8 @@
 [Unit]
-Description=Luc.ia STT socket
+Description=LVS STT socket
 
 [Socket]
-ListenStream=%t/lucia-stt.sock
+ListenStream=%t/lvs-stt.sock
 SocketMode=0600
 RemoveOnStop=true
 

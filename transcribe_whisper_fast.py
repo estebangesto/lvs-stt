@@ -10,7 +10,7 @@ Goals:
 Modes:
 - one-shot CLI:   python3 transcribe_whisper_fast.py --once path/to/audio.ogg
 - JSON output:    python3 transcribe_whisper_fast.py --once --json path/to/audio.ogg
-- daemon socket:  python3 transcribe_whisper_fast.py --serve --socket /tmp/lucia-stt.sock
+- daemon socket:  python3 transcribe_whisper_fast.py --serve --socket /tmp/lvs-stt.sock
 
 Protocol for the daemon:
 - client connects to the Unix socket
@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Any
 
 # ---------- Config ----------
-DEFAULT_PROMPT = "Soy Luc.ia, la asistente personal de Esteban. Hablamos de tecnología, ciberseguridad y Boca Juniors."
+DEFAULT_PROMPT = "Soy LVS, la asistente personal de Esteban. Hablamos de tecnología, ciberseguridad y Boca Juniors."
 DEFAULT_LANGUAGE = os.getenv("STT_LANGUAGE", "es")
 DEFAULT_MODEL = os.getenv("STT_MODEL", "small")
 DEFAULT_BACKEND = os.getenv("STT_BACKEND", "faster-whisper")
@@ -236,7 +236,7 @@ def parse_args() -> argparse.Namespace:
     mode = p.add_mutually_exclusive_group(required=False)
     mode.add_argument("--once", action="store_true", help="Transcribe one file and exit")
     mode.add_argument("--serve", action="store_true", help="Run as a Unix socket daemon")
-    p.add_argument("--socket", default="/tmp/lucia-stt.sock", help="Unix socket path for --serve")
+    p.add_argument("--socket", default="/tmp/lvs-stt.sock", help="Unix socket path for --serve")
     p.add_argument("--backend", default=DEFAULT_BACKEND, choices=["faster-whisper", "whisper"], help="STT backend")
     p.add_argument("--model", default=DEFAULT_MODEL, help="Model size/name")
     p.add_argument("--device", default=DEFAULT_DEVICE, help="Device: auto|cpu|cuda")
