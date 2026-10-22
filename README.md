@@ -28,7 +28,7 @@ git clone https://github.com/<owner>/lvs-stt.git ~/.local/share/lvs-stt
 cd ~/.local/share/lvs-stt
 
 python3 -m venv venv
-venv/bin/pip install --upgrade pip
+venv/bin/pip install --upgrade 'pip>=26.2.2'
 venv/bin/pip install faster-whisper
 
 mkdir -p ~/.config/lvs
