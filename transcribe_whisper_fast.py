@@ -231,6 +231,32 @@ class STTUnixServer(socketserver.UnixStreamServer):
     allow_reuse_address = True
 
 
+def create_unix_server(sock_path: Path, handler: type[STTJSONHandler]) -> tuple[STTUnixServer, bool]:
+    """Use systemd's listening socket when activated, otherwise bind directly."""
+    listen_pid = os.getenv("LISTEN_PID")
+    listen_fds = os.getenv("LISTEN_FDS")
+    activated = bool(listen_pid or listen_fds)
+
+    if activated:
+        if listen_pid != str(os.getpid()) or listen_fds != "1":
+            raise RuntimeError("systemd socket activation expected exactly one listening socket")
+
+        server = STTUnixServer(str(sock_path), handler, bind_and_activate=False)
+        server.socket.close()
+        server.socket = socket.fromfd(3, socket.AF_UNIX, socket.SOCK_STREAM)
+        server.server_address = str(sock_path)
+        if server.socket.getsockname() != str(sock_path):
+            server.server_close()
+            raise RuntimeError(f"systemd socket path does not match configured path: {sock_path}")
+        return server, True
+
+    if sock_path.exists():
+        if not sock_path.is_socket():
+            raise RuntimeError(f"refusing to remove non-socket path: {sock_path}")
+        sock_path.unlink()
+    return STTUnixServer(str(sock_path), handler), False
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Fast reusable STT worker")
     mode = p.add_mutually_exclusive_group(required=False)
@@ -260,17 +286,16 @@ def main() -> int:
 
     if args.serve:
         sock = Path(args.socket)
-        with suppress(Exception):
-            if sock.exists():
-                sock.unlink()
         STTJSONHandler.worker = worker
-        with STTUnixServer(str(sock), STTJSONHandler) as server:
+        server, systemd_activated = create_unix_server(sock, STTJSONHandler)
+        with server:
             print(f"STT service ready at {sock} ({worker._backend_name} / {worker.model_name})", file=sys.stderr)
             try:
                 server.serve_forever()
             finally:
-                with suppress(Exception):
-                    sock.unlink()
+                if not systemd_activated:
+                    with suppress(Exception):
+                        sock.unlink()
         return 0
 
     if not args.file:

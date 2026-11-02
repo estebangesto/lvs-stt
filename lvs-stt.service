@@ -7,8 +7,7 @@ After=lvs-stt.socket
 Type=simple
 WorkingDirectory=%h/.local/share/lvs-stt
 ExecStart=%h/.local/share/lvs-stt/venv/bin/python3 %h/.local/share/lvs-stt/transcribe_whisper_fast.py --serve --socket %t/lvs-stt.sock
-Restart=always
-RestartSec=2
+Restart=no
 EnvironmentFile=-%h/.config/lvs/lvs-stt.env
 
 [Install]

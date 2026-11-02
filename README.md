@@ -14,6 +14,7 @@ Servicio local y reutilizable de transcripción de audio. Expone un socket Unix 
 
 - Linux con `systemd --user` disponible para el usuario que ejecutará el servicio.
 - Python 3 con soporte para `venv`.
+- El módulo `venv` y `pip` disponibles para el intérprete elegido. En algunas distribuciones se instalan como paquetes del sistema separados.
 - Una instalación funcional de `faster-whisper` en el entorno virtual del proyecto. Para usar CUDA, el host debe tener el driver y las bibliotecas compatibles con la versión instalada.
 - Acceso de escritura al directorio de instalación elegido.
 
@@ -27,9 +28,7 @@ Los comandos se ejecutan con el mismo usuario que correrá OpenClaw; no se usa `
 git clone https://github.com/<owner>/lvs-stt.git ~/.local/share/lvs-stt
 cd ~/.local/share/lvs-stt
 
-python3 -m venv venv
-venv/bin/pip install --upgrade 'pip>=26.2.2'
-venv/bin/pip install faster-whisper
+make setup-venv PYTHON=python3
 
 mkdir -p ~/.config/lvs
 cp lvs-stt.env.example ~/.config/lvs/lvs-stt.env
@@ -44,6 +43,28 @@ make status
 `make install` copia las unidades a `~/.config/systemd/user/`. `make enable` habilita el socket para la sesión del usuario y `make start` inicia el socket, no el modelo. El servicio se activa al recibir una solicitud y se ejecuta con los parámetros definidos en `lvs-stt.service`.
 
 Antes de iniciar, revisar las variables `STT_*` de `~/.config/lvs/lvs-stt.env` según el hardware, modelo, idioma y tipo de cómputo disponibles.
+
+`make setup-venv` conserva una copia del entorno virtual existente con sufijo `.backup-AAAAmmdd-HHMMSS`, actualiza el entorno para el intérprete elegido e instala las dependencias versionadas en `requirements.txt`. El comando usa `pip --python` para instalar pip dentro del entorno sin depender de `ensurepip` en el Python del sistema.
+
+### Recuperación después de actualizar Python
+
+Un entorno virtual está ligado a la versión de Python con la que se creó. Si el sistema cambia el destino de `python3`, el ejecutable del entorno puede pasar a usar otra versión mientras los paquetes siguen en `lib/pythonX.Y/site-packages` de la versión anterior.
+
+Elegí explícitamente el intérprete instalado y reconstruí el entorno antes de iniciar el servicio. Por ejemplo:
+
+```bash
+make setup-venv PYTHON=/usr/bin/python3.14
+```
+
+El entorno previo queda respaldado en el mismo directorio. Para comprobar que el intérprete y los imports coinciden:
+
+```bash
+venv/bin/python --version
+venv/bin/python -m pip --version
+venv/bin/python -c 'import faster_whisper; print(faster_whisper.__file__)'
+```
+
+Si el servicio falla al cargar dependencias, systemd informa el error y no lo reinicia periódicamente. Corregí la causa y una nueva solicitud al socket volverá a intentar iniciar el worker.
 
 ## Integración con OpenClaw
 
