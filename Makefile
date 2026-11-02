@@ -3,11 +3,12 @@ SERVICE_DIR ?= $(HOME)/.config/systemd/user
 SRC_DIR ?= $(CURDIR)
 VENV ?= venv
 
-.PHONY: help lint setup-venv install enable start stop status benchmark
+.PHONY: help lint test setup-venv install enable start stop status benchmark
 
 help:
 	@echo "Targets:"
 	@echo "  lint      - compile-check the Python files"
+	@echo "  test      - run the unit and runtime-compatibility tests"
 	@echo "  setup-venv - rebuild/update the virtualenv and install runtime dependencies"
 	@echo "  install   - copy systemd units into ~/.config/systemd/user"
 	@echo "  enable    - enable the socket unit"
@@ -18,6 +19,9 @@ help:
 
 lint:
 	$(PYTHON) -m py_compile $(SRC_DIR)/transcribe_whisper_fast.py $(SRC_DIR)/stt_benchmark.py $(SRC_DIR)/stt_socket_client.py
+
+test:
+	$(VENV)/bin/python -m unittest discover --start-directory $(SRC_DIR)/tests --pattern 'test_*.py' --verbose
 
 setup-venv:
 	@set -eu; if [ -d "$(VENV)" ]; then \
