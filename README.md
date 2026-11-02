@@ -46,6 +46,8 @@ Antes de iniciar, revisar las variables `STT_*` de `~/.config/lvs/lvs-stt.env` s
 
 `make setup-venv` conserva una copia del entorno virtual existente con sufijo `.backup-AAAAmmdd-HHMMSS`, actualiza el entorno para el intérprete elegido e instala las dependencias versionadas en `requirements.txt`. El comando usa `pip --python` para instalar pip dentro del entorno sin depender de `ensurepip` en el Python del sistema.
 
+`requirements.txt` limita PyAV a la serie 18: `faster-whisper` 1.2.1 usa el parámetro `metadata_errors` de `av.open`, que fue retirado en PyAV 19.
+
 ### Recuperación después de actualizar Python
 
 Un entorno virtual está ligado a la versión de Python con la que se creó. Si el sistema cambia el destino de `python3`, el ejecutable del entorno puede pasar a usar otra versión mientras los paquetes siguen en `lib/pythonX.Y/site-packages` de la versión anterior.
