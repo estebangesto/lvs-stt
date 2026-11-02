@@ -4,6 +4,14 @@ Los cambios relevantes del proyecto se registran en este archivo.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-02
+
+### Fixed
+- Limita PyAV a versiones anteriores a 19 para mantener compatibilidad con `faster-whisper` 1.2.1.
+
+### Added
+- Pruebas automatizadas para la decodificación de audio y los modos de activación del socket Unix.
+
 ## [0.2.1] - 2026-11-02
 
 ### Added
