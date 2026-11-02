@@ -1,12 +1,14 @@
 PYTHON ?= python3
 SERVICE_DIR ?= $(HOME)/.config/systemd/user
 SRC_DIR ?= $(CURDIR)
+VENV ?= venv
 
-.PHONY: help lint install enable start stop status benchmark
+.PHONY: help lint setup-venv install enable start stop status benchmark
 
 help:
 	@echo "Targets:"
 	@echo "  lint      - compile-check the Python files"
+	@echo "  setup-venv - rebuild/update the virtualenv and install runtime dependencies"
 	@echo "  install   - copy systemd units into ~/.config/systemd/user"
 	@echo "  enable    - enable the socket unit"
 	@echo "  start     - start the socket unit"
@@ -16,6 +18,16 @@ help:
 
 lint:
 	$(PYTHON) -m py_compile $(SRC_DIR)/transcribe_whisper_fast.py $(SRC_DIR)/stt_benchmark.py $(SRC_DIR)/stt_socket_client.py
+
+setup-venv:
+	@set -eu; if [ -d "$(VENV)" ]; then \
+		backup="$(VENV).backup-$$(date +%Y%m%d-%H%M%S%N)"; \
+		cp -a "$(VENV)" "$$backup"; \
+		echo "Virtualenv backup: $$backup"; \
+	fi
+	$(PYTHON) -m venv --upgrade --without-pip $(VENV)
+	$(PYTHON) -m pip --python $(VENV) install --upgrade 'pip>=26.2.2'
+	$(PYTHON) -m pip --python $(VENV) install --requirement $(SRC_DIR)/requirements.txt
 
 install:
 	mkdir -p $(SERVICE_DIR)
