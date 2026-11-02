@@ -34,6 +34,7 @@ mkdir -p ~/.config/lvs
 cp lvs-stt.env.example ~/.config/lvs/lvs-stt.env
 
 make lint
+make test
 make install
 make enable
 make start
